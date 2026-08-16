@@ -5,6 +5,10 @@ const urlsToCache = [
   './manifest.json',
   './icon.png',
   './html2pdf.bundle.min.js'
+  './html2canvas.min.js',
+  './jspdf.umd.min.js',
+  '/xlsx.full.min.js',
+  './sw 2.js'
 ];
 
 self.addEventListener('install', event => {
