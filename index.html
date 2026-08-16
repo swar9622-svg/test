@@ -26,7 +26,7 @@
   <script src="./html2pdf.bundle.min.js"></script>
   <script src="./html2canvas.min.js"></script>
   <script src="./jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+ <script src="./xlsx.full.min.js"></script>
 
   <title>📚 كشف المتابعة 10.7</title>
   <style>
@@ -5683,5 +5683,14 @@
     renderUnitsDropdown();
     applyFontSettings();
   </script>
+<script>
+  // تسجيل Service Worker للعمل دون إنترنت
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw2.js')   // 🔴 انتبه للمسافة بين sw و 2
+      .then(() => console.log('✅ Service Worker تم تسجيله بنجاح'))
+      .catch(err => console.error('❌ فشل تسجيل Service Worker:', err));
+  }
+</script>
+
 </body>
 </html>
