@@ -3,7 +3,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <!-- 🔢 رقم إصدار التطبيق — غيّر الرقم هنا فقط ليتحدث تلقائياً في كل الشاشات -->
-  <script>const APP_VERSION = "21.82";</script>
+  <script>const APP_VERSION = "21.83";</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -702,6 +702,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     .daily-stats-detail{display:block;color:#667085;font-size:.64rem;font-weight:800;}
     .daily-stats-delete{flex:0 0 auto;border:1px solid #F4B6B6;border-radius:.56rem;min-height:2.18rem;padding:.34rem .52rem;background:#FFF0F0;color:#B42318;font:inherit;font-size:.68rem;font-weight:900;cursor:pointer;}
     .daily-stats-empty{text-align:center;color:#667085;padding:18px 8px;font-size:.75rem;font-weight:800;}
+
+    /* ===== الجولة التعليمية التفاعلية ===== */
+    #guidedTourOverlay{position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;justify-content:center;padding:16px;background:rgba(10,24,43,.58);font-family:inherit;direction:rtl;touch-action:none;user-select:none;-webkit-user-select:none}
+    #guidedTourOverlay.is-complete{align-items:center}
+    .guided-tour-card{width:min(440px,calc(100vw - 28px));box-sizing:border-box;background:#fff;border-radius:22px;padding:16px 15px 14px;box-shadow:0 18px 60px rgba(0,0,0,.32);text-align:right;position:relative}
+    .guided-tour-progress{font-size:.66rem;font-weight:900;color:#176671;margin-bottom:5px}
+    .guided-tour-title{font-size:1.02rem;font-weight:900;color:#143B5A;margin-bottom:5px}
+    .guided-tour-text{font-size:.78rem;line-height:1.7;color:#52606D;font-weight:800;margin-bottom:10px}
+    .guided-tour-hand{position:absolute;display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:#1B9AAA;color:#fff;font-size:1.8rem;box-shadow:0 6px 18px rgba(27,154,170,.42);animation:guidedHandPulse 1.2s infinite;pointer-events:none}
+    @keyframes guidedHandPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+    .guided-tour-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .guided-tour-step{font-size:.65rem;color:#98A2B3;font-weight:900}
+    .guided-tour-next{border:0;border-radius:10px;background:#176671;color:#fff;padding:9px 18px;font-family:inherit;font-size:.75rem;font-weight:900;cursor:pointer}
+    .guided-tour-next:active{transform:scale(.97)}
+    .guided-tour-complete-icon{font-size:3rem;text-align:center;margin-bottom:4px}
+    #guidedTourSpotlight{position:fixed;z-index:99998;display:none;border:3px solid #35D0D2;border-radius:12px;box-shadow:0 0 0 9999px rgba(10,24,43,.58),0 0 0 6px rgba(53,208,210,.20),0 0 22px rgba(53,208,210,.7);pointer-events:none;transition:all .24s ease}
+    body.guided-tour-active>*:not(#guidedTourOverlay):not(#guidedTourSpotlight){pointer-events:none!important}
   </style>
 </head>
 <body class="startup-active">
@@ -882,6 +899,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div class="modal-title" id="dailyStatsModalTitle" style="margin:0;color:#176671;font-size:1rem;"></div><button class="btn-close-circle" onclick="closeDailyStatsModal()" aria-label="إغلاق">✕</button></div>
       <div id="dailyStatsModalHint" class="daily-stats-hint"></div>
       <div id="dailyStatsModalList" class="daily-stats-list"></div>
+    </div>
+  </div>
+
+
+  <div id="guidedTourSpotlight" aria-hidden="true"></div>
+  <div id="guidedTourOverlay" role="dialog" aria-label="الجولة التعليمية">
+    <div class="guided-tour-card" id="guidedTourCard">
+      <div class="guided-tour-hand" id="guidedTourHand">☝️</div>
+      <div class="guided-tour-progress" id="guidedTourProgress"></div>
+      <div class="guided-tour-title" id="guidedTourTitle"></div>
+      <div class="guided-tour-text" id="guidedTourText"></div>
+      <div class="guided-tour-footer"><span class="guided-tour-step">اضغط في أي مكان للمتابعة</span><button type="button" class="guided-tour-next" id="guidedTourNext">التالي</button></div>
     </div>
   </div>
 
@@ -7553,6 +7582,46 @@ ${STUDENT_NOTIFICATION_SHARED_CSS}</style></head><body><main class="student-noti
       activeGradeName=grade; applyGradeWorkspace(gradeWorkspaces[grade]);
     }
 
+
+    // ===== برنامج الإرشاد التعليمي: لا يسمح بالتفاعل العادي حتى تكتمل الجولة =====
+    const GUIDED_TOUR_STEPS=[
+      {title:'مرحباً بك في الجولة التعليمية',text:'هذا عرض إرشادي فقط. سنمر على جميع الشاشات والوظائف الأساسية خطوة بخطوة. اضغط في أي مكان للانتقال.',target:null},
+      {title:'التنقل بين الكشوف',text:'هذه الأزرار تنقلك بين كشف الغياب، تحقق من فهمك، المتابعة والدرجات، وكشف الاستئذان.',target:'#absenceScreen .screen-navigation'},
+      {title:'اختيار الفصل والتاريخ والوحدة',text:'من هنا تختار الفصل والتاريخ ووحدة تسجيل الغياب والتأخر والمخالفات.',target:'#classSelect'},
+      {title:'إحصاءات اليوم',text:'هذه البطاقات تعرض أعداد الغياب والتأخر والمخالفات والاستئذان. اضغط ضغطتين على أي بطاقة لعرض الأسماء والحذف.',target:'#absentCount'},
+      {title:'تسجيل الغياب والتأخر والمخالفة',text:'داخل بطاقة الطالب: اضغط على زر غائب أو متأخر، أو افتح المخالفات لاختيار نوع المخالفة.',target:'#studentList .attendance-buttons'},
+      {title:'البحث عن طالب',text:'اكتب اسم الطالب هنا لتصفية القائمة بسرعة.',target:'#attendanceStudentSearch'},
+      {title:'الضغط المطوّل والضغط المزدوج',text:'اضغط مطولاً على اسم الطالب لعرض إحصائيته الكلية، واضغط مرتين لفتح الملاحظات والاستئذان والعودة.',target:'#studentList .student-name'},
+      {title:'كشف تحقق من فهمك',text:'من هنا تسجل مستوى فهم الطالب لكل درس: متقن، فهم جزئياً، يحتاج دعماً، أو لم ينفذ.',target:'#absenceScreen .nav-understanding',action:'understanding'},
+      {title:'قائمة الطلاب في تحقق من فهمك',text:'اختر الطالب ثم اضغط الحالة المناسبة لكل درس، ويمكنك استخدام التقرير الشامل والتصدير.',target:'#understandingStudentList'},
+      {title:'كشف المتابعة والدرجات',text:'هذه الشاشة تعرض جدول المتابعة والدرجات والواجبات والأنشطة والاختبارات.',target:'#understandingScreen .nav-followup',action:'followup'},
+      {title:'جدول المتابعة',text:'من هنا تعدل درجات الطلاب وتنتقل بين الفصل والوحدة، ثم تستخدم تقارير الدرجات وإشعار الطالب.',target:'#followupTable'},
+      {title:'كشف الاستئذان',text:'هذه الشاشة مخصصة لتسجيل استئذان الطالب ومتابعة خروجه وعودته.',target:'#permissionScreen .nav-permission',action:'permission'},
+      {title:'تسجيل الاستئذان والعودة',text:'اضغط «تسجيل استئذان» عند خروج الطالب. وعند عودته اضغط «↩ عودة» لتسجيل الوقت فوراً، ويمكن تعديل أو حذف السجل.',target:'#permissionStudentList'},
+      {title:'فقاعة الطلاب خارج الفصل',text:'تظهر الفقاعة عند وجود طالب مستأذن. اضغط عليها لعرض الطلاب، ويمكن سحبها إلى أي مكان.',target:'#globalPermissionBubble',action:'showBubble'},
+      {title:'التقارير والنسخ الاحتياطي',text:'في أسفل شاشة الغياب تجد التقارير الشاملة والنسخ الاحتياطي وإعدادات العرض وإدارة التطبيق.',target:'#absenceScreen .bottom-controls'},
+      {title:'انتهت الجولة التعليمية',text:'تعرفت الآن على وظائف التطبيق الأساسية في جميع الشاشات، بما في ذلك الضغط العادي والمزدوج والمطوّل والتقارير والحذف والاستئذان.',target:null,complete:true}
+    ];
+    let guidedTourIndex=0;
+    function guidedTourAction(action){
+      try{
+        if(action==='understanding') switchToUnderstandingScreen();
+        if(action==='followup') switchToFollowupScreen();
+        if(action==='permission') switchToPermissionScreen();
+        if(action==='showBubble'){ const bubble=document.getElementById('globalPermissionBubble'); if(bubble&&!bubble.classList.contains('is-visible')) updateGlobalPermissionBubble(); }
+      }catch(error){ console.warn('guided tour action',error); }
+    }
+    function guidedTourTarget(selector){ const target=selector?document.querySelector(selector):null; if(target&&target.offsetParent!==null){ target.scrollIntoView?.({block:'center',inline:'nearest'}); const rect=target.getBoundingClientRect(); const spot=document.getElementById('guidedTourSpotlight'); spot.style.display='block'; spot.style.left=`${Math.max(3,rect.left-5)}px`; spot.style.top=`${Math.max(3,rect.top-5)}px`; spot.style.width=`${Math.max(10,rect.width+10)}px`; spot.style.height=`${Math.max(10,rect.height+10)}px`; return rect; } document.getElementById('guidedTourSpotlight').style.display='none'; return null; }
+    function renderGuidedTourStep(){
+      const step=GUIDED_TOUR_STEPS[guidedTourIndex], overlay=document.getElementById('guidedTourOverlay'), card=document.getElementById('guidedTourCard'), hand=document.getElementById('guidedTourHand');
+      guidedTourAction(step.action); document.getElementById('guidedTourProgress').textContent=step.complete?'اكتملت الجولة':`الخطوة ${guidedTourIndex+1} من ${GUIDED_TOUR_STEPS.length}`; document.getElementById('guidedTourTitle').textContent=step.title; document.getElementById('guidedTourText').textContent=step.text;
+      document.getElementById('guidedTourNext').textContent=step.complete?'إغلاق العرض':'التالي'; overlay.classList.toggle('is-complete',!!step.complete); guidedTourTarget(step.target);
+      const rect=step.target?document.querySelector(step.target)?.getBoundingClientRect():null; if(rect&&!step.complete){ hand.style.left=`${Math.min(window.innerWidth-62,Math.max(6,rect.left+rect.width/2-27))}px`; hand.style.top=`${Math.min(window.innerHeight-62,Math.max(6,rect.top-66))}px`; hand.style.display='flex'; } else { hand.style.display='none'; }
+      if(step.complete){ document.body.classList.remove('guided-tour-active'); document.getElementById('guidedTourSpotlight').style.display='none'; }
+    }
+    function advanceGuidedTour(){ if(guidedTourIndex>=GUIDED_TOUR_STEPS.length-1){ document.getElementById('guidedTourOverlay').remove(); document.getElementById('guidedTourSpotlight').remove(); return; } guidedTourIndex++; renderGuidedTourStep(); }
+    function startGuidedTour(){ document.body.classList.add('guided-tour-active'); document.getElementById('guidedTourOverlay')?.addEventListener('click',event=>{ if(event.target.closest('#guidedTourNext')||event.target.id==='guidedTourOverlay'||event.target.closest('.guided-tour-card')) advanceGuidedTour(); }); document.getElementById('guidedTourNext')?.addEventListener('click',event=>{ event.stopPropagation(); advanceGuidedTour(); }); renderGuidedTourStep(); }
+
     // ===== شاشة الافتتاح =====
     function finishStartupSplash(){
       const splash=document.getElementById('startupSplash');
@@ -7589,6 +7658,7 @@ ${STUDENT_NOTIFICATION_SHARED_CSS}</style></head><body><main class="student-noti
         updateGlobalPermissionBubble();
         initGlobalPermissionBubbleDrag();
         window.setInterval(updateGlobalPermissionBubble,30000);
+        setTimeout(startGuidedTour,700);
         renderUnitsDropdown();
         installUnitLockLongPresses();
         refreshUnitLockIndicators();
