@@ -1,6 +1,7 @@
-# Classroom Attendance & Absence Tracking App
+# نسخة العرض 21.82-demo
 
-This is a personal web application for tracking student attendance and tardiness locally in the classroom.
+هذه نسخة عرض مستقلة من تطبيق كشف المتابعة، وتبدأ تلقائياً ببيانات وهمية عربية لعرض وظائف التطبيق دون استخدام بيانات حقيقية.
 
-- **No Sensitive Data:** Does not prompt for passwords, identity numbers, or financial information.
-- **Client-Side Storage:** All attendance logs are saved locally on the device via Browser LocalStorage.
+افتح `index.html` عبر استضافة ملفات ثابتة مثل GitHub Pages أو Netlify أو أي خادم ويب محلي. تحتوي الحزمة على المكتبات والصورة وملف manifest اللازمين للتشغيل.
+
+بيانات العرض تشمل فصلاً وطلاباً وهميين، حالات غياب وتأخر ومخالفات، استئذانات نشطة، ملاحظات، درجات، وحدات ودروساً، مع إمكانية تجربة الإضافة والتعديل والحذف والتقارير والتصدير.
