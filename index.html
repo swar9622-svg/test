@@ -3,7 +3,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <!-- 🔢 رقم إصدار التطبيق — غيّر الرقم هنا فقط ليتحدث تلقائياً في كل الشاشات -->
-  <script>const APP_VERSION = "21.83";</script>
+  <script>const APP_VERSION = "21.84";</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -710,7 +710,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     .guided-tour-progress{font-size:.66rem;font-weight:900;color:#176671;margin-bottom:5px}
     .guided-tour-title{font-size:1.02rem;font-weight:900;color:#143B5A;margin-bottom:5px}
     .guided-tour-text{font-size:.78rem;line-height:1.7;color:#52606D;font-weight:800;margin-bottom:10px}
-    .guided-tour-hand{position:absolute;display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:#1B9AAA;color:#fff;font-size:1.8rem;box-shadow:0 6px 18px rgba(27,154,170,.42);animation:guidedHandPulse 1.2s infinite;pointer-events:none}
+    .guided-tour-hand{position:absolute;display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:#1B9AAA;color:#fff;font-size:1.8rem;box-shadow:0 6px 18px rgba(27,154,170,.42);animation:guidedHandPulse 1.2s infinite;pointer-events:none}.guided-tour-hand.double{animation:guidedDoubleTap 1.25s infinite}.guided-tour-hand.long{animation:guidedLongPress 1.8s infinite;background:#6C3483}.guided-tour-hand.drag{animation:guidedDrag 1.5s infinite;background:#007AFF}@keyframes guidedDoubleTap{0%,100%{transform:scale(1)}25%{transform:scale(.88)}45%{transform:scale(1.08)}65%{transform:scale(.88)}85%{transform:scale(1)}}@keyframes guidedLongPress{0%,100%{transform:scale(1);box-shadow:0 6px 18px rgba(108,52,131,.38)}50%{transform:scale(1.16);box-shadow:0 0 0 10px rgba(108,52,131,.16),0 8px 24px rgba(108,52,131,.45)}}@keyframes guidedDrag{0%,100%{transform:translateX(0)}50%{transform:translateX(22px)}
     @keyframes guidedHandPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
     .guided-tour-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
     .guided-tour-step{font-size:.65rem;color:#98A2B3;font-weight:900}
@@ -7585,38 +7585,60 @@ ${STUDENT_NOTIFICATION_SHARED_CSS}</style></head><body><main class="student-noti
 
     // ===== برنامج الإرشاد التعليمي: لا يسمح بالتفاعل العادي حتى تكتمل الجولة =====
     const GUIDED_TOUR_STEPS=[
-      {title:'مرحباً بك في الجولة التعليمية',text:'هذا عرض إرشادي فقط. سنمر على جميع الشاشات والوظائف الأساسية خطوة بخطوة. اضغط في أي مكان للانتقال.',target:null},
-      {title:'التنقل بين الكشوف',text:'هذه الأزرار تنقلك بين كشف الغياب، تحقق من فهمك، المتابعة والدرجات، وكشف الاستئذان.',target:'#absenceScreen .screen-navigation'},
-      {title:'اختيار الفصل والتاريخ والوحدة',text:'من هنا تختار الفصل والتاريخ ووحدة تسجيل الغياب والتأخر والمخالفات.',target:'#classSelect'},
-      {title:'إحصاءات اليوم',text:'هذه البطاقات تعرض أعداد الغياب والتأخر والمخالفات والاستئذان. اضغط ضغطتين على أي بطاقة لعرض الأسماء والحذف.',target:'#absentCount'},
-      {title:'تسجيل الغياب والتأخر والمخالفة',text:'داخل بطاقة الطالب: اضغط على زر غائب أو متأخر، أو افتح المخالفات لاختيار نوع المخالفة.',target:'#studentList .attendance-buttons'},
-      {title:'البحث عن طالب',text:'اكتب اسم الطالب هنا لتصفية القائمة بسرعة.',target:'#attendanceStudentSearch'},
-      {title:'الضغط المطوّل والضغط المزدوج',text:'اضغط مطولاً على اسم الطالب لعرض إحصائيته الكلية، واضغط مرتين لفتح الملاحظات والاستئذان والعودة.',target:'#studentList .student-name'},
-      {title:'كشف تحقق من فهمك',text:'من هنا تسجل مستوى فهم الطالب لكل درس: متقن، فهم جزئياً، يحتاج دعماً، أو لم ينفذ.',target:'#absenceScreen .nav-understanding',action:'understanding'},
-      {title:'قائمة الطلاب في تحقق من فهمك',text:'اختر الطالب ثم اضغط الحالة المناسبة لكل درس، ويمكنك استخدام التقرير الشامل والتصدير.',target:'#understandingStudentList'},
-      {title:'كشف المتابعة والدرجات',text:'هذه الشاشة تعرض جدول المتابعة والدرجات والواجبات والأنشطة والاختبارات.',target:'#understandingScreen .nav-followup',action:'followup'},
-      {title:'جدول المتابعة',text:'من هنا تعدل درجات الطلاب وتنتقل بين الفصل والوحدة، ثم تستخدم تقارير الدرجات وإشعار الطالب.',target:'#followupTable'},
-      {title:'كشف الاستئذان',text:'هذه الشاشة مخصصة لتسجيل استئذان الطالب ومتابعة خروجه وعودته.',target:'#permissionScreen .nav-permission',action:'permission'},
-      {title:'تسجيل الاستئذان والعودة',text:'اضغط «تسجيل استئذان» عند خروج الطالب. وعند عودته اضغط «↩ عودة» لتسجيل الوقت فوراً، ويمكن تعديل أو حذف السجل.',target:'#permissionStudentList'},
-      {title:'فقاعة الطلاب خارج الفصل',text:'تظهر الفقاعة عند وجود طالب مستأذن. اضغط عليها لعرض الطلاب، ويمكن سحبها إلى أي مكان.',target:'#globalPermissionBubble',action:'showBubble'},
-      {title:'التقارير والنسخ الاحتياطي',text:'في أسفل شاشة الغياب تجد التقارير الشاملة والنسخ الاحتياطي وإعدادات العرض وإدارة التطبيق.',target:'#absenceScreen .bottom-controls'},
-      {title:'انتهت الجولة التعليمية',text:'تعرفت الآن على وظائف التطبيق الأساسية في جميع الشاشات، بما في ذلك الضغط العادي والمزدوج والمطوّل والتقارير والحذف والاستئذان.',target:null,complete:true}
+      {title:'مرحباً بك في الدليل الشامل',text:'هذه نسخة تعليمية فقط وليست للتشغيل. ستظهر يد متحركة على كل عنصر، وسنشرح الضغط العادي والضغط المزدوج والضغط المطوّل والسحب والنوافذ والتقارير.',target:null,mode:'single'},
+      {title:'التنقل بين الكشوف',text:'اضغط مرة واحدة على اسم أي كشف للانتقال إليه: الغياب والمخالفات، تحقق من فهمك، المتابعة والدرجات، أو الاستئذان.',target:'#absenceScreen .screen-navigation',mode:'single'},
+      {title:'اختيار الفصل والتاريخ والوحدة',text:'اضغط مرة على الفصل لاختيار الفصل، وعلى التاريخ لتحديد اليوم، وعلى الوحدة لتحديد الوحدة التي ستسجل فيها الحضور.',target:'#classSelect',mode:'single'},
+      {title:'إحصاءات اليوم',text:'اضغط ضغطتين على غياب اليوم أو التأخر أو المخالفات أو استئذان اليوم لعرض أسماء الطلاب وحذف أي سجل بالخطأ.',target:'#absentCount',mode:'double'},
+      {title:'تسجيل الغياب والتأخر',text:'اضغط مرة على غائب أو متأخر داخل بطاقة الطالب. الضغط مرة ثانية على الحالة نفسها يلغيها.',target:'#studentList .attendance-buttons',mode:'single'},
+      {title:'نافذة المخالفات',text:'اضغط مرة على زر مخالفات لفتح نافذة أنواع المخالفات، ثم اضغط النوع المطلوب واضغط «تم» لإغلاق النافذة.',target:'#studentList .attendance-buttons',mode:'single'},
+      {title:'البحث عن طالب',text:'اضغط مرة داخل مربع البحث ثم اكتب جزءاً من اسم الطالب لتظهر الأسماء المطابقة فقط.',target:'#attendanceStudentSearch',mode:'single'},
+      {title:'إحصائية الطالب بالضغط المطوّل',text:'اضغط ضغطاً مطوّلاً على اسم الطالب. ستظهر فقاعة توضح إحصاءات الغياب والتأخر والمخالفات والاستئذان.',target:'#studentList .student-name',mode:'long'},
+      {title:'ملاحظات واستئذان الطالب بالضغط المزدوج',text:'اضغط ضغطتين متتاليتين على اسم الطالب. ستظهر أدوات الملاحظات والاستئذان والعودة والتعديل والحذف.',target:'#studentList .student-name',mode:'double'},
+      {title:'مربع الإحصاءات وقائمة الحذف',text:'هذه النوافذ تعرض أسماء السجلات اليومية. اضغط «حذف» بجانب الاسم لإزالة الغياب أو التأخر أو المخالفة أو الاستئذان.',target:'#dailyStatsModal',mode:'single',action:'openStats'},
+      {title:'التقارير الشاملة',text:'اضغط مرة على التقارير الشاملة لاختيار نوع التقرير والفصل والفترة، ثم المعاينة أو التصدير.',target:'#reportModal',mode:'single',action:'openReports'},
+      {title:'النسخ الاحتياطي والاستعادة',text:'اضغط مرة على النسخ الاحتياطي لتصدير نسخة JSON أو استعادة نسخة محفوظة أو إدارة التخزين المحلي.',target:'#dataMenuModal',mode:'single',action:'openBackup'},
+      {title:'إعدادات العرض',text:'من إعدادات العرض تغيّر الخط والألوان والملاحظات وشاشة البداية ومظهر الجداول.',target:'#displaySettingsModal',mode:'single',action:'openDisplay'},
+      {title:'إدارة التطبيق',text:'إدارة التطبيق تجمع أدوات إدارة أسماء الطلاب والفصول والوحدات والصفوف والجدول وأرقام الطلاب والتصدير.',target:'#appManagementModal',mode:'single',action:'openManage'},
+      {title:'إدارة أسماء الطلاب',text:'اختر الفصل ثم أضف الأسماء أو عدّلها أو استوردها من ملف، واحفظ القائمة. هذه الأسماء تظهر في جميع الكشوف.',target:'#appManagementModal .app-management-option.is-names',mode:'single'},
+      {title:'إدارة الفصول والصفوف',text:'أضف الصف أولاً ثم أضف فصوله، وبدّل الصف النشط من القوائم. بيانات كل صف محفوظة في مساحة مستقلة.',target:'#appManagementModal .app-management-option.is-grades',mode:'single'},
+      {title:'إدارة الوحدات والدروس',text:'أضف الوحدة وعدّل اسمها وحدد عدد الدروس وأسماءها، ثم احفظ الدروس لتظهر في تحقق الفهم والمتابعة.',target:'#unitsManageModal',mode:'single',action:'openUnits'},
+      {title:'أرقام الطلاب',text:'استورد أرقام الطلاب من Excel أو عدّل الرقم يدوياً، ويمنع التطبيق تكرار الرقم بين طالبين.',target:'#studentNumbersModal',mode:'single',action:'openNumbers'},
+      {title:'جدول الحصص',text:'حدد وقت بداية ونهاية كل حصة والفصل المرتبط بها. يستخدمه التطبيق لتحديد نهاية مدة الاستئذان.',target:'#classScheduleModal',mode:'single',action:'openSchedule'},
+      {title:'تحقق من فهمك',text:'في هذا الكشف اختر الفصل والوحدة والدرس، ثم اضغط حالة الطالب: متقن، فهم جزئياً، يحتاج دعماً، أو لم ينفذ.',target:'#understandingScreen .screen-navigation',mode:'single',action:'understanding'},
+      {title:'الدرس والتقارير التعليمية',text:'بدّل الدرس من القائمة، واستخدم تقرير الوحدة أو التقرير الشامل وتصدير PDF لمراجعة مستويات الفهم.',target:'#understandingStudentList',mode:'single'},
+      {title:'المتابعة والدرجات',text:'انتقل إلى كشف المتابعة لاختيار الفصل والوحدة ومراجعة جدول الواجبات والأنشطة والاختبارات والمجموع الكلي.',target:'#followupScreen .screen-navigation',mode:'single',action:'followup'},
+      {title:'خلايا الدرجات والفرز',text:'اضغط على خلية الطالب لتعديل الدرجة، واستخدم أزرار «فرز» لترتيب الجدول، وأزرار الاستيراد والتصدير للدرجات والمشاريع.',target:'#followupTable',mode:'single'},
+      {title:'تقارير الدرجات وإشعار الطالب',text:'في أسفل المتابعة افتح تقارير الدرجات أو أنشئ إشعاراً تفصيلياً لطالب واحد.',target:'#followupScreen .followup-bottom-controls',mode:'single'},
+      {title:'كشف الاستئذان',text:'انتقل إلى كشف الاستئذان لتحديد الفصل والتاريخ ومراجعة الطلاب. اضغط مرة على «تسجيل استئذان» لتسجيل الخروج.',target:'#permissionScreen .screen-navigation',mode:'single',action:'permission'},
+      {title:'زر العودة والتعديل والحذف',text:'عند خروج الطالب يظهر زر «↩ عودة» لتسجيل الوقت فوراً، وزر «تعديل» لتعديل السجل أو حذفه.',target:'#permissionStudentList',mode:'single'},
+      {title:'فقاعة خارج الفصل والسحب',text:'تظهر فقاعة الطلاب خارج الفصل. اضغط عليها لعرض الأسماء، اضغط «↩ عودة» للعودة الفورية، واسحب الفقاعة إلى أي مكان.',target:'#globalPermissionBubble',mode:'drag'},
+      {title:'التقارير الخاصة بالاستئذان',text:'من شاشة الاستئذان افتح تقرير الطالب أو تقارير الاستئذانات لمراجعة الخروج والعودة والمدة والسبب.',target:'#permissionScreen .student-report',mode:'single'},
+      {title:'انتهى الدليل الشامل',text:'تعرفت على جميع الشاشات، النوافذ، الكشوف، الفصول، الإحصاءات، الحذف، الضغط العادي والمزدوج والمطوّل، السحب، التقارير والنسخ الاحتياطي.',target:null,complete:true}
     ];
+
     let guidedTourIndex=0;
     function guidedTourAction(action){
+      document.querySelectorAll('.modal').forEach(modal=>{ if(modal.id!=='guidedTourOverlay') modal.style.display='none'; });
       try{
         if(action==='understanding') switchToUnderstandingScreen();
         if(action==='followup') switchToFollowupScreen();
         if(action==='permission') switchToPermissionScreen();
-        if(action==='showBubble'){ const bubble=document.getElementById('globalPermissionBubble'); if(bubble&&!bubble.classList.contains('is-visible')) updateGlobalPermissionBubble(); }
+        if(action==='openStats') openDailyStatsModal('absent');
+        if(action==='openReports') openReportModal();
+        if(action==='openBackup') openDataMenuModal();
+        if(action==='openDisplay') openDisplaySettingsModal();
+        if(action==='openManage') openAppManagementModal();
+        if(action==='openUnits') openUnitsManageModal();
+        if(action==='openNumbers') openStudentNumbersModal();
+        if(action==='openSchedule') openClassScheduleModal();
       }catch(error){ console.warn('guided tour action',error); }
     }
     function guidedTourTarget(selector){ const target=selector?document.querySelector(selector):null; if(target&&target.offsetParent!==null){ target.scrollIntoView?.({block:'center',inline:'nearest'}); const rect=target.getBoundingClientRect(); const spot=document.getElementById('guidedTourSpotlight'); spot.style.display='block'; spot.style.left=`${Math.max(3,rect.left-5)}px`; spot.style.top=`${Math.max(3,rect.top-5)}px`; spot.style.width=`${Math.max(10,rect.width+10)}px`; spot.style.height=`${Math.max(10,rect.height+10)}px`; return rect; } document.getElementById('guidedTourSpotlight').style.display='none'; return null; }
     function renderGuidedTourStep(){
       const step=GUIDED_TOUR_STEPS[guidedTourIndex], overlay=document.getElementById('guidedTourOverlay'), card=document.getElementById('guidedTourCard'), hand=document.getElementById('guidedTourHand');
-      guidedTourAction(step.action); document.getElementById('guidedTourProgress').textContent=step.complete?'اكتملت الجولة':`الخطوة ${guidedTourIndex+1} من ${GUIDED_TOUR_STEPS.length}`; document.getElementById('guidedTourTitle').textContent=step.title; document.getElementById('guidedTourText').textContent=step.text;
+      guidedTourAction(step.action); document.getElementById('guidedTourProgress').textContent=step.complete?'اكتملت الجولة':`الخطوة ${guidedTourIndex+1} من ${GUIDED_TOUR_STEPS.length}`; document.getElementById('guidedTourTitle').textContent=step.title; document.getElementById('guidedTourText').textContent=step.text; document.querySelector('.guided-tour-step').textContent=step.complete?'اضغط لإغلاق الدليل':(step.mode==='double'?'اليد تحاكي ضغطتين متتاليتين':step.mode==='long'?'اليد تحاكي ضغطاً مطوّلاً':step.mode==='drag'?'اسحب الفقاعة مع اليد':'اليد تحاكي ضغطة واحدة');
       document.getElementById('guidedTourNext').textContent=step.complete?'إغلاق العرض':'التالي'; overlay.classList.toggle('is-complete',!!step.complete); guidedTourTarget(step.target);
-      const rect=step.target?document.querySelector(step.target)?.getBoundingClientRect():null; if(rect&&!step.complete){ hand.style.left=`${Math.min(window.innerWidth-62,Math.max(6,rect.left+rect.width/2-27))}px`; hand.style.top=`${Math.min(window.innerHeight-62,Math.max(6,rect.top-66))}px`; hand.style.display='flex'; } else { hand.style.display='none'; }
+      hand.className=`guided-tour-hand ${step.mode||'single'}`; hand.textContent=step.mode==='double'?'👆👆':step.mode==='long'?'✋':step.mode==='drag'?'☝️':'☝️'; const rect=step.target?document.querySelector(step.target)?.getBoundingClientRect():null; if(rect&&!step.complete){ hand.style.left=`${Math.min(window.innerWidth-62,Math.max(6,rect.left+rect.width/2-27))}px`; hand.style.top=`${Math.min(window.innerHeight-62,Math.max(6,rect.top-66))}px`; hand.style.display='flex'; } else { hand.style.display='none'; }
       if(step.complete){ document.body.classList.remove('guided-tour-active'); document.getElementById('guidedTourSpotlight').style.display='none'; }
     }
     function advanceGuidedTour(){ if(guidedTourIndex>=GUIDED_TOUR_STEPS.length-1){ document.getElementById('guidedTourOverlay').remove(); document.getElementById('guidedTourSpotlight').remove(); return; } guidedTourIndex++; renderGuidedTourStep(); }
