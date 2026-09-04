@@ -3,7 +3,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <!-- 🔢 رقم إصدار التطبيق — غيّر الرقم هنا فقط ليتحدث تلقائياً في كل الشاشات -->
-  <script>const APP_VERSION = "21.84";</script>
+  <script>const APP_VERSION = "21.85";</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -717,7 +717,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     .guided-tour-next{border:0;border-radius:10px;background:#176671;color:#fff;padding:9px 18px;font-family:inherit;font-size:.75rem;font-weight:900;cursor:pointer}
     .guided-tour-next:active{transform:scale(.97)}
     .guided-tour-complete-icon{font-size:3rem;text-align:center;margin-bottom:4px}
-    #guidedTourSpotlight{position:fixed;z-index:99998;display:none;border:3px solid #35D0D2;border-radius:12px;box-shadow:0 0 0 9999px rgba(10,24,43,.58),0 0 0 6px rgba(53,208,210,.20),0 0 22px rgba(53,208,210,.7);pointer-events:none;transition:all .24s ease}
+    #guidedTourSpotlight{position:fixed;z-index:99998;display:none;border:3px solid #35D0D2;border-radius:12px;box-shadow:0 0 0 6px rgba(53,208,210,.20),0 0 22px rgba(53,208,210,.7);pointer-events:none;transition:all .24s ease}
     body.guided-tour-active>*:not(#guidedTourOverlay):not(#guidedTourSpotlight){pointer-events:none!important}
   </style>
 </head>
@@ -7638,7 +7638,7 @@ ${STUDENT_NOTIFICATION_SHARED_CSS}</style></head><body><main class="student-noti
       const step=GUIDED_TOUR_STEPS[guidedTourIndex], overlay=document.getElementById('guidedTourOverlay'), card=document.getElementById('guidedTourCard'), hand=document.getElementById('guidedTourHand');
       guidedTourAction(step.action); document.getElementById('guidedTourProgress').textContent=step.complete?'اكتملت الجولة':`الخطوة ${guidedTourIndex+1} من ${GUIDED_TOUR_STEPS.length}`; document.getElementById('guidedTourTitle').textContent=step.title; document.getElementById('guidedTourText').textContent=step.text; document.querySelector('.guided-tour-step').textContent=step.complete?'اضغط لإغلاق الدليل':(step.mode==='double'?'اليد تحاكي ضغطتين متتاليتين':step.mode==='long'?'اليد تحاكي ضغطاً مطوّلاً':step.mode==='drag'?'اسحب الفقاعة مع اليد':'اليد تحاكي ضغطة واحدة');
       document.getElementById('guidedTourNext').textContent=step.complete?'إغلاق العرض':'التالي'; overlay.classList.toggle('is-complete',!!step.complete); guidedTourTarget(step.target);
-      hand.className=`guided-tour-hand ${step.mode||'single'}`; hand.textContent=step.mode==='double'?'👆👆':step.mode==='long'?'✋':step.mode==='drag'?'☝️':'☝️'; const rect=step.target?document.querySelector(step.target)?.getBoundingClientRect():null; if(rect&&!step.complete){ hand.style.left=`${Math.min(window.innerWidth-62,Math.max(6,rect.left+rect.width/2-27))}px`; hand.style.top=`${Math.min(window.innerHeight-62,Math.max(6,rect.top-66))}px`; hand.style.display='flex'; } else { hand.style.display='none'; }
+      hand.className=`guided-tour-hand ${step.mode||'single'}`; hand.textContent=step.mode==='double'?'👆👆':step.mode==='long'?'✋':step.mode==='drag'?'☝️':'☝️'; const rect=step.target?document.querySelector(step.target)?.getBoundingClientRect():null; if(rect&&!step.complete){ hand.style.left=`${Math.min(window.innerWidth-62,Math.max(6,rect.left+rect.width/2-27))}px`; hand.style.top=`${Math.min(window.innerHeight-62,Math.max(6,rect.top+rect.height/2-27))}px`; hand.style.display='flex'; const card=document.getElementById('guidedTourCard'); card.style.left='50%'; card.style.transform='translateX(-50%)'; if(rect.top<window.innerHeight*.46){ card.style.top=`${Math.min(window.innerHeight-245,Math.max(12,rect.bottom+14))}px`; card.style.bottom='auto'; } else { card.style.top='auto'; card.style.bottom='16px'; } } else { hand.style.display='none'; const card=document.getElementById('guidedTourCard'); card.style.left='50%'; card.style.transform='translateX(-50%)'; card.style.top='50%'; card.style.bottom='auto'; card.style.marginTop='-110px'; }
       if(step.complete){ document.body.classList.remove('guided-tour-active'); document.getElementById('guidedTourSpotlight').style.display='none'; }
     }
     function advanceGuidedTour(){ if(guidedTourIndex>=GUIDED_TOUR_STEPS.length-1){ document.getElementById('guidedTourOverlay').remove(); document.getElementById('guidedTourSpotlight').remove(); return; } guidedTourIndex++; renderGuidedTourStep(); }
