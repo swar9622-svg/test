@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>دمج 30 صورة إلى PDF</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:#172033;background:#f4f6fa}
+*{box-sizing:border-box}body{margin:0;padding:14px}main{max-width:1050px;margin:auto;background:#fff;border:1px solid #e1e6ef;border-radius:18px;padding:18px;box-shadow:0 8px 28px #18223a0d}
+h1{font-size:clamp(22px,4vw,31px);margin:0 0 8px}p{line-height:1.7;color:#4b5568}.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}
+button,.filelabel{border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:700;cursor:pointer;background:#1769e0;color:#fff}
+button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#e9eef7;color:#172033}.danger{background:#fee4e2;color:#912018}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.status{background:#f1f5fb;border-radius:10px;padding:12px;min-height:44px;line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:15px}
+.tile{position:relative;border:2px solid #d2dbea;border-radius:11px;overflow:hidden;background:#f8fafc;min-width:0}
+.tile.dragover{border-color:#1769e0;background:#e8f1ff}.tile img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#fff}
+.tile .meta{padding:7px;font-size:12px;overflow-wrap:anywhere;color:#344054}
+.num{position:absolute;top:5px;right:5px;background:#172033e8;color:white;border-radius:6px;padding:3px 7px;font-size:12px;z-index:1}
+.actions{display:flex;gap:5px;padding:0 7px 8px}.actions button{flex:1;padding:7px 3px;font-size:12px}
+.options{display:flex;gap:15px;flex-wrap:wrap;margin:12px 0}.options label{display:flex;gap:6px;align-items:center}
+.note{font-size:13px;color:#667085}.result{margin-top:20px}
+@media(min-width:750px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:390px){body{padding:6px}main{padding:10px}.grid{gap:5px}.actions{gap:3px}.actions button{font-size:11px}}
+</style>
+</head>
+<body>
+<main>
+<h1>دمج 30 صورة وحفظها PDF</h1>
+<p>اختر الصور، وستُضاف بالترتيب الذي تختاره في نافذة الملفات: الصورة 1 والصورة 2 في الصف الأول، ثم 3 و4 في الصف الثاني. إذا اختلف الترتيب، استخدم أزرار التحريك أو اسحب الصور لإعادة ترتيبها. الناتج PDF طويل من صفحة واحدة، وتتم المعالجة على جهازك.</p>
+<div class="controls">
+<label class="filelabel" for="files">📁 اختيار الصور</label>
+<input id="files" type="file" accept="image/*" multiple>
+<button id="pdf" disabled>إنشاء وحفظ PDF</button>
+<button id="reset" class="secondary">مسح الكل</button>
+</div>
+<div class="options">
+<label><input id="fit" type="checkbox" checked> توحيد مساحة الصور مع الحفاظ على تناسبها</label>
+</div>
+<div id="status" class="status" role="status">اختر الصور بالترتيب المطلوب. يمكنك اختيار 30 صورة أو أقل.</div>
+<div id="grid" class="grid"></div>
+<p class="note">ترتيب القراءة: من اليمين إلى اليسار، صفًا بعد صف. استخدم ↑ و↓ لتحريك الصورة، أو اسحبها إلى موضع آخر. يُنصح بملفات صور أصلية واضحة؛ قد يستغرق إنشاء PDF وقتًا مع الصور الكبيرة.</p>
+<div class="result" id="result"></div>
+</main>
+<script>
+const fileInput=document.getElementById('files'),grid=document.getElementById('grid'),statusBox=document.getElementById('status'),pdfBtn=document.getElementById('pdf'),resetBtn=document.getElementById('reset'),fit=document.getElementById('fit');
+let items=[],dragFrom=-1;
+function say(s){statusBox.textContent=s}
+function clean(){items.forEach(x=>URL.revokeObjectURL(x.url));items=[];grid.replaceChildren();pdfBtn.disabled=true;fileInput.value=''}
+function render(){
+ grid.replaceChildren();
+ items.forEach((it,i)=>{
+  const tile=document.createElement('div');tile.className='tile';tile.draggable=true;tile.dataset.index=i;
+  tile.addEventListener('dragstart',e=>{dragFrom=i;e.dataTransfer.setData('text/plain',String(i));e.dataTransfer.effectAllowed='move'});
+  tile.addEventListener('dragover',e=>{e.preventDefault();tile.classList.add('dragover');e.dataTransfer.dropEffect='move'});
+  tile.addEventListener('dragleave',()=>tile.classList.remove('dragover'));
+  tile.addEventListener('drop',e=>{e.preventDefault();tile.classList.remove('dragover');let from=Number(e.dataTransfer.getData('text/plain'));if(!Number.isInteger(from))from=dragFrom;if(from>=0&&from<items.length&&from!==i){const moved=items.splice(from,1)[0];items.splice(i,0,moved);render();say('تم تغيير الترتيب.')}});
+  const num=document.createElement('span');num.className='num';num.textContent='الصورة '+(i+1);tile.appendChild(num);
+  const im=document.createElement('img');im.src=it.url;im.alt='الصورة '+(i+1);tile.appendChild(im);
+  const meta=document.createElement('div');meta.className='meta';meta.textContent=it.file.name;tile.appendChild(meta);
+  const acts=document.createElement('div');acts.className='actions';
+  const up=document.createElement('button');up.className='secondary';up.textContent='↑';up.title='تحريك للأعلى';up.disabled=i===0;up.onclick=()=>move(i,i-1);
+  const down=document.createElement('button');down.className='secondary';down.textContent='↓';down.title='تحريك للأسفل';down.disabled=i===items.length-1;down.onclick=()=>move(i,i+1);
+  const del=document.createElement('button');del.className='danger';del.textContent='حذف';del.onclick=()=>{URL.revokeObjectURL(items[i].url);items.splice(i,1);render();pdfBtn.disabled=!items.length;say('عدد الصور: '+items.length)};
+  acts.append(up,down,del);tile.appendChild(acts);grid.appendChild(tile);
+ });
+ pdfBtn.disabled=!items.length;
+}
+function move(from,to){if(to<0||to>=items.length)return;const x=items.splice(from,1)[0];items.splice(to,0,x);render();say('تم تغيير الترتيب.')}
+fileInput.addEventListener('change',()=>{
+ const incoming=Array.from(fileInput.files||[]).filter(f=>f.type.startsWith('image/'));
+ if(!incoming.length){say('لم يتم اختيار صور قابلة للفتح.');return}
+ const room=30-items.length,chosen=incoming.slice(0,room);
+ chosen.forEach(file=>items.push({file,url:URL.createObjectURL(file)}));
+ fileInput.value='';render();
+ say(`تمت إضافة ${chosen.length} صورة. الإجمالي ${items.length} من 30. الصور تُعرض حسب ترتيب الاختيار؛ راجعها وأعد ترتيبها قبل الحفظ.`+(incoming.length>room?' تم تجاهل الصور الزائدة لأن الحد 30 صورة.':''));
+});
+resetBtn.addEventListener('click',()=>{clean();say('اختر الصور بالترتيب المطلوب.')});
+function loadImage(url){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('تعذر فتح إحدى الصور.'));im.src=url})}
+function canvasBlob(canvas,type,quality){return new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('تعذر تجهيز الصورة.')),type,quality))}
+function saveBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)}
+pdfBtn.addEventListener('click',async()=>{
+ if(!items.length)return;
+ pdfBtn.disabled=true;say('جارٍ تجهيز الصور وإنشاء PDF… اترك الصفحة مفتوحة.');
+ try{
+  // Process one image at a time, downscaling only when needed to fit a conservative PDF page.
+  // Each image is JPEG-encoded at high quality to keep the PDF practical and avoid huge canvas limits.
+  const images=[];
+  for(let i=0;i<items.length;i++){
+   say(`جارٍ تجهيز الصورة ${i+1} من ${items.length}…`);
+   const im=await loadImage(items[i].url);
+   const maxW=1400,maxH=1800,scale=Math.min(1,maxW/im.naturalWidth,maxH/im.naturalHeight);
+   const w=Math.max(1,Math.round(im.naturalWidth*scale)),h=Math.max(1,Math.round(im.naturalHeight*scale));
+   const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');
+   ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.drawImage(im,0,0,w,h);
+   const blob=await canvasBlob(c,'image/jpeg',0.96);
+   const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob)});
+   images.push({data,w,h});
+   c.width=1;c.height=1;
+  }
+  // Build a single very tall PDF page, with image pairs arranged RTL.
+  // PDF page units are points. Images retain their aspect ratio and are not stretched.
+  const maxCellW=Math.max(...images.map(x=>x.w)),maxCellH=Math.max(...images.map(x=>x.h));
+  const pageW=maxCellW*2,pageH=maxCellH*Math.ceil(images.length/2);
+  const objects=[];
+  const enc=s=>new TextEncoder().encode(s);
+  let chunks=[],length=0,offsets=[0];
+  function push(v){const b=typeof v==='string'?enc(v):v;chunks.push(b);length+=b.length}
+  function obj(n,body){offsets[n]=length;push(`${n} 0 obj\n${body}\nendobj\n`)}
+  const pageObj=3+images.length*3,contentObj=pageObj+1;
+  obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2,`<< /Type /Pages /Kids [${pageObj} 0 R] /Count 1 >>`);
+  const xobjRefs=images.map((_,i)=>`${3+i*3} 0 R`).join(' ');
+  // Image objects are RGB JPEG streams. Convert data URLs to bytes.
+  for(let i=0;i<images.length;i++){
+   const img=images[i],base=img.data.split(',')[1],binary=atob(base),bytes=new Uint8Array(binary.length);
+   for(let j=0;j<binary.length;j++)bytes[j]=binary.charCodeAt(j);
+   const imageObj=3+i*3,smaskObj=imageObj+1,unusedObj=imageObj+2;
+   // JPEG is encoded as DeviceRGB; image object references its byte stream directly.
+   offsets[imageObj]=length;push(`${imageObj} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${img.w} /Height ${img.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${bytes.length} >>\nstream\n`);push(bytes);push('\nendstream\nendobj\n');
+   // Reserve two object numbers per image for stable references; lightweight empty objects are harmless.
+   obj(smaskObj,'null');obj(unusedObj,'null');
+  }
+  let content='';
+  const margin=0;
+  images.forEach((img,i)=>{
+   const row=Math.floor(i/2),col=i%2,x=(1-col)*maxCellW,y=pageH-(row+1)*maxCellH;
+   let w=img.w,h=img.h;
+   if(fit.checked){const s=Math.min(maxCellW/w,maxCellH/h);w*=s;h*=s}
+   const dx=x+(maxCellW-w)/2,dy=y+(maxCellH-h)/2;
+   content+=`q ${w.toFixed(3)} 0 0 ${h.toFixed(3)} ${dx.toFixed(3)} ${dy.toFixed(3)} cm /Im${i+1} Do Q\n`;
+  });
+  const contentBytes=enc(content);
+  offsets[contentObj]=length;push(`${contentObj} 0 obj\n<< /Length ${contentBytes.length} >>\nstream\n`);push(contentBytes);push('endstream\nendobj\n');
+  // Resource dictionary and page object. Names map to the image objects above.
+  const resourceMap=images.map((_,i)=>`/Im${i+1} ${3+i*3} 0 R`).join(' ');
+  obj(pageObj,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << ${resourceMap} >> >> /Contents ${contentObj} 0 R >>`);
+  const xref=length;push(`xref\n0 ${contentObj+1}\n0000000000 65535 f \n`);
+  for(let i=1;i<=contentObj;i++)push(String(offsets[i]||0).padStart(10,'0')+' 00000 n \n');
+  push(`trailer\n<< /Size ${contentObj+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+  const pdfBlob=new Blob(chunks,{type:'application/pdf'});
+  saveBlob(pdfBlob,'merged-images.pdf');
+  say(`اكتمل إنشاء PDF وحُفظ التنزيل. عدد الصور: ${images.length}. ترتيب القراءة: الصورة 1 ثم 2 في الصف الأول، ثم 3 ثم 4. حجم الصفحة الطويلة قد لا يناسب الطباعة العادية.`);
+ }catch(e){console.error(e);say('تعذر إنشاء PDF: '+(e.message||'خطأ غير معروف')+'. جرّب عددًا أقل من الصور أو صورًا أصغر حجمًا.')}
+ finally{pdfBtn.disabled=!items.length}
+});
+</script>
+</body>
+</html>
